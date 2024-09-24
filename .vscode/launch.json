@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "preLaunchTask": "${defaultBuildTask}",
+        "type": "probe-rs-debug",
+        "request": "launch",
+        "name": "Debug Ravenscar Rust",
+        "flashingConfig": {
+          "flashingEnabled": true,
+        },
+        //!MODIFY
+        "chip": "STM32F303VCTx",
+        "coreConfigs": [
+          {
+            //!MODIFY
+            "programBinary": "target/thumbv7em-none-eabihf/debug/app",
+            "rttEnabled": true,
+            "coreIndex": 0,
+            
+          }
+        ]
+      }
+    ]
+}

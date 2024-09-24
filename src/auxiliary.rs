@@ -2,14 +2,14 @@ use auxiliary_params::FACTOR;
 use rtic_monotonics::fugit::Instant;
 
 mod auxiliary_params{
-    pub const FACTOR : u8 = 3;
+    pub const FACTOR : u16 = 3;
 }
 
 pub type TimeInstant = Instant<u32,1,1000>;
 
 pub struct Auxiliary{
-    request_counter : u32,
-    run_counter : u32,
+    request_counter : u8,
+    run_counter : u16,
 }
 
 impl Auxiliary {
@@ -20,7 +20,7 @@ impl Auxiliary {
         }
     }
 
-    pub fn due_activation(&mut self, param : u32) -> bool {
+    pub fn due_activation(&mut self, param : u8) -> bool {
         self.request_counter = (self.request_counter + 1) % 5;
 
         self.request_counter == (param % 5)
@@ -28,8 +28,8 @@ impl Auxiliary {
 
     pub fn check_due(&mut self) -> bool {
         self.run_counter = (self.run_counter + 1) % 1000;
-        let divisor = self.run_counter / FACTOR as u32;
+        let divisor = self.run_counter / FACTOR;
 
-        (divisor * FACTOR as u32) == self.run_counter
+        (divisor * FACTOR) == self.run_counter
     }
 }

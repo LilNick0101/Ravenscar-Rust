@@ -19,12 +19,7 @@ impl ActivationManager{
         }
     }
 
-    pub fn activation_sporaic(&self) -> TimeInstant {
-        self.activation_time
-    }
-
-    pub fn activation_cyclic(&mut self,activation_time : TimeInstant) -> TimeInstant{
-        self.activation_time = activation_time;
+    pub fn get_activation_time(&self) -> TimeInstant {
         self.activation_time
     }
 }
