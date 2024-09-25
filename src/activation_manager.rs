@@ -7,7 +7,6 @@ mod activation_manager_params{
     pub const RELATIVE_OFFSET : u32 = 100;
 }
 
-
 pub struct ActivationManager{
     activation_time : TimeInstant,
 }
