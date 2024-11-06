@@ -8,7 +8,7 @@ pub struct SystemOverhead{
     init_value : Option<TimeInstant>,
     start_sub_value : Option<TimeInstant>,
     end_sub_value : Option<TimeInstant>,
-    jitter : u32,
+    jitter : u64,
 
 }
 
@@ -32,7 +32,7 @@ impl SystemOverhead{
         let st = Mono::now();
         self.start_sub_value = Some(st);
         if let Some(i) = self.init_value {
-            self.jitter = (st - i).to_millis();
+            self.jitter = st.checked_duration_since(i).unwrap().to_micros();
         }
     }
 
@@ -42,11 +42,11 @@ impl SystemOverhead{
 
     pub fn show_exec_results(&mut self, name : &'static str) {
         self.end_sub_program();
-        if let Some(init_val) = self.init_value {
+        if let Some(_init_val) = self.init_value {
             let start_sub = self.start_sub_value.unwrap();
             let end_sub = self.end_sub_value.unwrap();
-            let subprogram = end_sub - start_sub;
-            defmt::info!("Item {}: {} ms subprogram, {} ms of jitter",name,subprogram.to_micros() as f64/1000.0,self.jitter);
+            let subprogram = end_sub.checked_duration_since(start_sub).unwrap();
+            defmt::info!("Item {}: {} micros subprogram, {} micros of jitter",name,subprogram.to_micros(),self.jitter);
         }
     }
 }

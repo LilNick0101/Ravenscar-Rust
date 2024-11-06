@@ -7,18 +7,16 @@ pub mod activation_manager;
 pub mod auxiliary;
 pub mod constants;
 pub mod system_overhead;
-pub mod task_tracker;
 
 use core::sync::atomic::{AtomicUsize, Ordering};
 use defmt_brtt as _; // global logger
 
 use panic_probe as _;
 
-use rtic_monotonics::systick_monotonic;
-// TODO(6) Import your HAL
+use rtic_monotonics::stm32::prelude::*;
 use stm32f3xx_hal as _; // memory layout
 
-systick_monotonic!(Mono,1000);
+stm32_tim2_monotonic!(Mono,1_000_000);
 
 // same panicking *behavior* as `panic-probe` but doesn't print a panic message
 // this prevents the panic message being printed *twice* when `defmt::panic` is invoked
@@ -28,6 +26,7 @@ fn panic() -> ! {
     cortex_m::asm::udf()
 }
 */
+
 static COUNT: AtomicUsize = AtomicUsize::new(0);
 defmt::timestamp!("{=usize}", {
     // NOTE(no-CAS) `timestamps` runs with interrupts disabled

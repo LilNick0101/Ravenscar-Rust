@@ -1,5 +1,6 @@
 use activation_manager_params::RELATIVE_OFFSET;
-use rtic_monotonics::systick::prelude::*;
+use fugit::ExtU32;
+use rtic_monotonics::stm32::prelude::*;
 
 use crate::{auxiliary::TimeInstant, Mono};
 

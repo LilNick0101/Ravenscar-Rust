@@ -5,7 +5,7 @@ mod auxiliary_params{
     pub const FACTOR : u16 = 3;
 }
 
-pub type TimeInstant = Instant<u32,1,1000>;
+pub type TimeInstant = Instant<u64,1,1_000_000>;
 
 pub struct Auxiliary{
     request_counter : u8,

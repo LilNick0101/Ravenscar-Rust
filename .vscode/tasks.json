@@ -8,11 +8,9 @@
 				"$rustc"
 			],
 			"args": [
-                "--bin",
-                // "--release",
-                // "--",
-                "app"
-            ],
+				"--bin",
+				"app"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true

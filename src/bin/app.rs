@@ -2,7 +2,7 @@
 #![no_std]
 #![feature(type_alias_impl_trait)]
 
-use ravenscar_app as _; // global logger + panicking-behavior + memory layout
+use ravenscar_app as _;
 
 use ravenscar_app::Mono;
 
@@ -10,19 +10,15 @@ use ravenscar_app::*;
 use constants::constants::*;
 use system_overhead::SystemOverhead;
 
-// TODO(7) Configure the `rtic::app` macro
 #[rtic::app(
-    // TODO: Replace `some_hal::pac` with the path to the PAC
     device = stm32f3xx_hal::pac,
-    // TODO: Replace the `FreeInterrupt1, ...` with free interrupt vectors if software tasks are used
-    // You can usually find the names of the interrupt vectors in the some_hal::pac::interrupt enum.
-    dispatchers = [SPI1,ADC3,TIM2],
+    
+    dispatchers = [SPI1,ADC3,TIM3],
 
     peripherals = true
 )]
 mod app {
 
-    use futures::{select_biased, FutureExt};
     use rtic_monotonics::fugit::ExtU32;
     use rtic_sync::{channel::{Receiver, Sender}, make_channel};
     use rtic_time::Monotonic;
@@ -33,7 +29,6 @@ mod app {
     // Shared resources go here
     #[shared]
     struct Shared {
-        // TODO: Add resources
         activation_manager : activation_manager::ActivationManager,
         activation_log : activation_log::ActivationLog
     }
@@ -47,14 +42,12 @@ mod app {
     }
 
     #[init]
-    fn init(cx: init::Context) -> (Shared, Local) {
+    fn init(_cx: init::Context) -> (Shared, Local) {
         defmt::info!("System init");
 
-        Mono::start(cx.core.SYST,36_000_000);
-        // TODO setup monotonic if used
-        // let sysclk = { /* clock setup + returning sysclk as an u32 */ };
-        // let token = 
-        // rtic_monotonics::systick::Systick::new(cx.core.SYST, sysclk, token);
+        Mono::start(36_000_000);
+
+        let activation_log = activation_log::ActivationLog::new();
         let (p, c) = make_channel!(u32, { REQUEST_BUFFER_CAPACITY as usize });
         let (writer,reader) = make_channel!(bool, 1);
         regular_producer::spawn(writer.clone()).unwrap();
@@ -64,16 +57,14 @@ mod app {
 
         (
             Shared {
-                // Initialization of shared resources go here
                 activation_manager : activation_manager::ActivationManager::new(),
-                activation_log : activation_log::ActivationLog::new(),
+                activation_log : activation_log,
             },
             Local {
-                // Initialization of local resources go here
                 p,
                 c,
                 aux : auxiliary::Auxiliary::new()
-            },
+            }
         )
     }
 
@@ -94,33 +85,24 @@ mod app {
             let deadline = next_time + REGULAR_PRODUCER_DEADLINE.millis();
             next_time = period;
             tracker.start_tracking();
-            let fut = async {
-                tracker.start_sub_program();
-                work.small_whetstone(REGULAR_PRODUCER_WORKLOAD);
+            tracker.start_sub_program();
+            work.small_whetstone(REGULAR_PRODUCER_WORKLOAD);
 
-                if cx.local.aux.due_activation(2){
-                    if let Err(_) = cx.local.p.try_send(ON_CALL_PRODUCER_WORKLOAD) {
-                        defmt::error!("Failed sporadic activation.")
-                    }
-                };
-
-                if cx.local.aux.check_due(){
-                    writer.try_send(true).unwrap_or_default();
-                };
+            if cx.local.aux.due_activation(2){
+                if let Err(_) = cx.local.p.try_send(ON_CALL_PRODUCER_WORKLOAD) {
+                    defmt::error!("Failed sporadic activation.")
+                }
             };
 
-            select_biased! {
-                _ = Mono::delay_until(deadline).fuse() => {
-                    panic!("Deadline miss on regular producer!")
-                },
-                _ = fut.fuse() => {
-                    defmt::info!("End of cyclic execution.");
-                    tracker.show_exec_results("Regular");
-                    let slack = next_time - Mono::now();
-                    defmt::info!("Slack time for Regular Producer: {} ms", slack.to_millis());
-                    Mono::delay_until(period).await
-                }
-            }
+            if cx.local.aux.check_due(){
+                writer.try_send(true).unwrap_or_default();
+            };
+            
+            defmt::info!("End of cyclic execution.");
+            tracker.show_exec_results("Regular");
+            let slack = deadline - Mono::now();
+            defmt::info!("Slack time for Regular Producer: {} ms", slack.to_millis());
+            Mono::delay_until(period).await
         }
     
     }
@@ -186,10 +168,11 @@ mod app {
     fn external_event_server(mut cx: external_event_server::Context) {
         let mut tracker = SystemOverhead::new();
         tracker.start_tracking();
-
+        tracker.start_sub_program();
+        
         let deadline = Mono::now() + 100.millis();
+        
         cx.shared.activation_log.lock(|log|{
-            tracker.start_sub_program();
             log.write(Mono::now());
         });
 
@@ -202,7 +185,6 @@ mod app {
     async fn force_interrupt_handler(_: force_interrupt_handler::Context){
         let mut next_time = Mono::now();
 
-        
         loop {
             next_time = next_time + INTERRUPT_PERIOD.millis();
             rtic::pend(interrupt::EXTI0);
