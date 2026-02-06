@@ -54,7 +54,7 @@ Then, you can run the project using Cargo:
  cargo run --bin app
 ```
 
-To run release build, use:
+To run the release build, use:
 
 ```bash
  cargo run --release --bin app
