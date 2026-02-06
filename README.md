@@ -30,7 +30,7 @@ Ravenscar-Rust/
 
 ## Building and Running
 First, make sure you have Rust and the command `rustup` available.
-Install the thumbv7em-none-eabihf target to build for the ARM Cortex-M4 architecture:
+Install your target toolchain depending on your target device, for example, for ARM Cortex-M4 devices, you can use:
 
 ```bash
 rustup target add thumbv7em-none-eabihf
