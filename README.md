@@ -16,7 +16,7 @@ Ravenscar-Rust/
 ├── README.md
 ├── src/ # Main source code
 │ ├── lib.rs
-│ ├── activation_log.rs
+│ ├── activation_log.rs # activation log implementation
 │ ├── activation_manager.rs # activation manager implementation
 │ ├── auxiliary.rs # auxiliary utilities
 │ ├── constants.rs # project constants
@@ -35,6 +35,7 @@ Install your target toolchain depending on your target device, for example, for 
 ```bash
 rustup target add thumbv7em-none-eabihf
 ```
+Available targets can be found in the .cargo/config.toml file in the `target` field found in the `[build]` section, make sure to install the appropriate target for your device using `rustup target add <target-name>`.
 
 Then install the required dependencies for building and running the project:
 
@@ -60,7 +61,7 @@ To run release build, use:
 ```
 
 ## Configuration
-The project was developed and tested on an _STM32F303VC_ microcontroller unit, other devices and targets can be set up by changing, in the `.cargo/config.toml` file. the `runner` and `target` fields to match your specific hardware and setup. Make sure to install the appropriate target for your device using `rustup target add <target-name>`.
+The project was developed and tested on an _STM32F303VC_ microcontroller unit, other devices and targets can be set up by changing, in the `.cargo/config.toml` file. the `runner` and `target` fields to match your specific hardware and setup.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE-MIT](LICENSE-MIT) file for details.
