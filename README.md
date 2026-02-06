@@ -5,7 +5,7 @@ systems](https://www.open-std.org/jtc1/sc22/wg9/n575.pdf) made for the Real-time
 
 The Ravenscar Profile is a subset of the Ada programming language designed for high-integrity and real-time systems. It restricts certain language features to ensure predictability, reliability, and ease of analysis, making it suitable for safety-critical applications.
 
-The extended application example demonstrates the use of the Ravenscar Profile in a simple scenario, involving multiple tasks, protected objects, and inter-task communication, the main work of this project was to translate the Ada code provided in the guide to Rust, using the `RTIC` framework to manage real-time tasks and resources and compare it's performance and behavior with the original Ada implementation, developing an understanding of how Rust can be used in high-integrity and embedded systems.
+The extended application example demonstrates the use of the Ravenscar Profile in a simple scenario, involving multiple tasks, protected objects, and inter-task communication, the main work of this project was to translate the Ada code provided in the guide to Rust, using the [`RTIC`](https://rtic.rs/) framework to manage real-time tasks and resources and compare it's performance and behavior with the original Ada implementation, developing an understanding of how Rust can be used in high-integrity and embedded systems.
 
 ## Project Structure
 ```
