@@ -29,7 +29,7 @@ Ravenscar-Rust/
 ```
 
 ## Building and Running
-First, make sure you have Rust and the command  rustup available.
+First, make sure you have Rust and the command `rustup` available.
 Install the thumbv7em-none-eabihf target to build for the ARM Cortex-M4 architecture:
 
 ```bash
@@ -60,7 +60,7 @@ To run release build, use:
 ```
 
 ## Configuration
-The project was developed and tested on an _STM32F303VC_ microcontroller unit, other devices and targets can be set up by changing, in the `.cargo/config.toml` file. the `runner` and `target` fields to match your specific hardware and setup.
+The project was developed and tested on an _STM32F303VC_ microcontroller unit, other devices and targets can be set up by changing, in the `.cargo/config.toml` file. the `runner` and `target` fields to match your specific hardware and setup. Make sure to install the appropriate target for your device using `rustup target add <target-name>`.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE-MIT](LICENSE-MIT) file for details.
